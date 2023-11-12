@@ -33,44 +33,4 @@ class ProgramHistoryQuerydslRepository(
             .limit(1)
             .fetchOne()
     }
-
-    fun getWeekCareAverageRate(userId: Int, createdDate: LocalDate, week: Int): Int? {
-        val startDate = getWeekStartDate(createdDate, week)
-        val endDate = getWeekEndDate(startDate)
-
-        val result = queryFactory
-            .select(
-                Expressions.numberTemplate(Double::class.java,
-                    "ROUND(AVG(({0}.workOutCount + {0}.meditationCount) / 7.0) * 100)",
-                        programHistory)
-            )
-            .from(programHistory)
-            .where(
-                programHistory.user.id.eq(userId.toLong()),
-                programHistory.date.between(startDate, endDate)
-            )
-            .fetchOne()
-        return result?.toInt()
-    }
-
-    fun getDailyOfWeekWorkOutRateAndMeditationRate(userId: Int, createdDate: LocalDate, week: Int): List<DailyHistoryResponse> {
-        val startDate = getWeekStartDate(createdDate, week)
-        val endDate = getWeekEndDate(startDate)
-
-        return queryFactory
-            .select(
-                Projections.constructor(
-                    DailyHistoryResponse::class.java,
-                    programHistory.date,
-                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND({0} * 100 / 6)", programHistory.workOutCount)).intValue(),
-                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND({0} * 100 / 1)", programHistory.meditationCount)).intValue()
-                )
-            )
-            .from(programHistory)
-            .where(
-                programHistory.user.id.eq(userId.toLong()),
-                programHistory.date.between(startDate, endDate)
-            )
-            .fetch()
-    }
 }

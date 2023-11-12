@@ -2,6 +2,7 @@ package com.group.beyondapp.repository.programhistory
 
 import com.group.beyondapp.domain.programhistory.QProgramHistory.programHistory
 import com.group.beyondapp.dto.programhistory.response.DailyHistoryResponse
+import com.group.beyondapp.dto.programhistory.response.FourWeeksHistoryResponse
 import com.group.beyondapp.util.getWeekEndDate
 import com.group.beyondapp.util.getWeekStartDate
 import com.querydsl.core.types.Projections
@@ -11,34 +12,30 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 
 @Component
-class WeeklyHistoryQuerydslRepository(
+class FourWeeksHistoryQuerydslRepository(
     private val queryFactory: JPAQueryFactory,
 ) {
 
 
-    fun getWeekCareAverageRate(userId: Int, createdDate: LocalDate, week: Int): Int? {
-        val startDate = getWeekStartDate(createdDate, week)
-        val endDate = getWeekEndDate(startDate)
-
-        val result = queryFactory
+    fun getAllCareTotalAverageRate(userId: Int, createdDate: LocalDate, week: Int): FourWeeksHistoryResponse? {
+        return queryFactory
             .select(
-                Expressions.numberTemplate(Double::class.java,
-                    "ROUND(AVG(({0}.workOutCount + {0}.meditationCount) / 7.0) * 100)",
-                        programHistory)
+                Projections.constructor(
+                    FourWeeksHistoryResponse::class.java,
+                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND(AVG(({0}.workOutCount + {0}.meditationCount) / 7.0) * 100)", programHistory)).intValue(),
+                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND(AVG({0}.workOutCount / 6.0) * 100)", programHistory)).intValue(),
+                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND(AVG({0}.meditationCount / 1.0) * 100)", programHistory)).intValue()
+                )
             )
             .from(programHistory)
             .where(
                 programHistory.user.id.eq(userId.toLong()),
-                programHistory.date.between(startDate, endDate)
+                programHistory.date.between(createdDate, createdDate.plusDays(27))
             )
             .fetchOne()
-        return result?.toInt()
     }
 
     fun getDailyWorkOutRateAndMeditationRate(userId: Int, createdDate: LocalDate, week: Int): List<DailyHistoryResponse> {
-        val startDate = getWeekStartDate(createdDate, week)
-        val endDate = getWeekEndDate(startDate)
-
         return queryFactory
             .select(
                 Projections.constructor(
@@ -51,8 +48,9 @@ class WeeklyHistoryQuerydslRepository(
             .from(programHistory)
             .where(
                 programHistory.user.id.eq(userId.toLong()),
-                programHistory.date.between(startDate, endDate)
+                programHistory.date.between(createdDate, createdDate.plusDays(27))
             )
             .fetch()
     }
+
 }

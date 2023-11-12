@@ -14,6 +14,7 @@ class ProgramHistoryService(
     private val userRepository: UserRepository,
     private val programHistoryQuerydslRepository: ProgramHistoryQuerydslRepository,
     private val weeklyHistoryService: WeeklyHistoryService,
+    private val fourWeeksHistoryService: FourWeeksHistoryService,
 ) {
     
     fun isValidWeek(calculatedWeek: Int, paramWeek: Int): Boolean {
@@ -51,7 +52,7 @@ class ProgramHistoryService(
 
         // 4주간 데이터 조회 (4주일 : 파라미터 0)
         if (request.week == 0) {
-
+            val fourWeeksHistory = fourWeeksHistoryService.getFourWeeksHistory(user, request)
         }
 
         return ProgramHistoryResponse(user.name, todayHistory, weeklyHistory, null)
