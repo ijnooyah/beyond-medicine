@@ -36,23 +36,5 @@ class FourWeeksHistoryQuerydslRepository(
             .fetchOne()
     }
 
-    fun getDailyWorkOutRateAndMeditationRate(userId: Int, createdDate: LocalDate, week: Int): List<DailyHistoryResponse> {
-        return queryFactory
-            .select(
-                Projections.constructor(
-                    DailyHistoryResponse::class.java,
-                    programHistory.date,
-                    Expressions.asNumber(Expressions.numberTemplate(Integer::class.java, "ABS(DATEDIFF('DAY', {0}, {1})) + 1", ConstantImpl.create(createdDate), programHistory.date)).intValue(),
-                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND({0} * 100 / 6)", programHistory.workOutCount)).intValue(),
-                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND({0} * 100 / 1)", programHistory.meditationCount)).intValue()
-                )
-            )
-            .from(programHistory)
-            .where(
-                programHistory.user.id.eq(userId.toLong()),
-                programHistory.date.between(createdDate, createdDate.plusDays(27))
-            )
-            .fetch()
-    }
 
 }

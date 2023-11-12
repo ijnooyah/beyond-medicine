@@ -13,21 +13,28 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 
 @Component
-class WeeklyHistoryQuerydslRepository(
+class DailyHistoryQuerydslRepository(
     private val queryFactory: JPAQueryFactory,
 ) {
 
-    fun getWeekCareTotalAverageRate(userId: Int, createdDate: LocalDate, week: Int): WeeklyHistoryResponse? {
-        val startDate = getWeekStartDate(createdDate, week)
-        val endDate = getWeekEndDate(startDate)
+
+    fun getDailyWorkOutRateAndMeditationRate(userId: Int, createdDate: LocalDate, week: Int): List<DailyHistoryResponse> {
+
+        var startDate = getWeekStartDate(createdDate, week)
+        var endDate = getWeekEndDate(startDate)
+        if (week == 0) {
+            startDate = createdDate
+            endDate = createdDate.plusDays(27)
+        }
 
         return queryFactory
             .select(
                 Projections.constructor(
-                    WeeklyHistoryResponse::class.java,
-                    Expressions.constant(startDate),
-                    Expressions.constant(endDate),
-                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND(AVG(({0}.workOutCount + {0}.meditationCount) / 7.0) * 100)", programHistory)).intValue()
+                    DailyHistoryResponse::class.java,
+                    programHistory.date,
+                    Expressions.asNumber(Expressions.numberTemplate(Integer::class.java, "ABS(DATEDIFF('DAY', {0}, {1})) + 1", ConstantImpl.create(createdDate), programHistory.date)).intValue(),
+                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND({0} * 100 / 6)", programHistory.workOutCount)).intValue(),
+                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND({0} * 100 / 1)", programHistory.meditationCount)).intValue()
                 )
             )
             .from(programHistory)
@@ -35,7 +42,6 @@ class WeeklyHistoryQuerydslRepository(
                 programHistory.user.id.eq(userId.toLong()),
                 programHistory.date.between(startDate, endDate)
             )
-            .fetchOne()
+            .fetch()
     }
-
 }
