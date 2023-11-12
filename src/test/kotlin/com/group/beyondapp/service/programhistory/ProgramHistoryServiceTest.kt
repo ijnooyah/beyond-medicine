@@ -38,7 +38,8 @@ class ProgramHistoryServiceTest@Autowired constructor(
 
         user.updateCreatedAt(createdDate)
         val savedUser = userRepository.save(user)
-        val request = ProgramHistoryRequest(savedUser.id!!.toInt(), 0)
+//        val request = ProgramHistoryRequest(savedUser.id!!.toInt(), 0)
+        val request = ProgramHistoryRequest(savedUser.id!!.toInt(), 2)
         programHistoryRepository.saveAll(listOf(
             ProgramHistory(savedUser, createdDate, 5, 1),
             ProgramHistory(savedUser, createdDate.plusDays(1), 5, 1),

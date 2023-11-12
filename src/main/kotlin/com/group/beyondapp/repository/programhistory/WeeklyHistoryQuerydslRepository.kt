@@ -2,6 +2,8 @@ package com.group.beyondapp.repository.programhistory
 
 import com.group.beyondapp.domain.programhistory.QProgramHistory.programHistory
 import com.group.beyondapp.dto.programhistory.response.DailyHistoryResponse
+import com.group.beyondapp.dto.programhistory.response.FourWeeksHistoryResponse
+import com.group.beyondapp.dto.programhistory.response.WeeklyHistoryResponse
 import com.group.beyondapp.util.getWeekEndDate
 import com.group.beyondapp.util.getWeekStartDate
 import com.querydsl.core.types.Projections
@@ -15,16 +17,16 @@ class WeeklyHistoryQuerydslRepository(
     private val queryFactory: JPAQueryFactory,
 ) {
 
-
-    fun getWeekCareAverageRate(userId: Int, createdDate: LocalDate, week: Int): Int? {
+    fun getWeekCareTotalAverageRate(userId: Int, createdDate: LocalDate, week: Int): WeeklyHistoryResponse? {
         val startDate = getWeekStartDate(createdDate, week)
         val endDate = getWeekEndDate(startDate)
 
-        val result = queryFactory
+        return queryFactory
             .select(
-                Expressions.numberTemplate(Double::class.java,
-                    "ROUND(AVG(({0}.workOutCount + {0}.meditationCount) / 7.0) * 100)",
-                        programHistory)
+                Projections.constructor(
+                    WeeklyHistoryResponse::class.java,
+                    Expressions.asNumber(Expressions.numberTemplate(Double::class.java, "ROUND(AVG(({0}.workOutCount + {0}.meditationCount) / 7.0) * 100)", programHistory)).intValue(),
+                )
             )
             .from(programHistory)
             .where(
@@ -32,7 +34,6 @@ class WeeklyHistoryQuerydslRepository(
                 programHistory.date.between(startDate, endDate)
             )
             .fetchOne()
-        return result?.toInt()
     }
 
     fun getDailyWorkOutRateAndMeditationRate(userId: Int, createdDate: LocalDate, week: Int): List<DailyHistoryResponse> {
