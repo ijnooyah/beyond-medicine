@@ -44,7 +44,7 @@ class ProgramHistoryServiceTest@Autowired constructor(
 
         // when
         val programHistory = programHistoryService.getUserProgramHistory(request)
-        println("데이터$programHistory")
+        println("데이터: $programHistory")
 
         // then
         val results = programHistoryRepository.findAll()

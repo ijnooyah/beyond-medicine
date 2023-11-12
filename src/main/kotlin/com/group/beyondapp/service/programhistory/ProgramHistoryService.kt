@@ -20,12 +20,12 @@ class ProgramHistoryService(
         val user = userRepository.findByIdOrNull(request.userId.toLong()) ?: throw IllegalArgumentException()
 //        val userCreatedDate = user.createdAt
         // 오늘한 운동과 명상 조회
-        val dailyHistory = programHistoryQuerydslRepository.getTodayWorkOutAndMeditation(request.userId)
+        val todayHistory = programHistoryQuerydslRepository.getTodayWorkOutAndMeditation(request.userId)
 
         // 주차별 정보 설정
         val weeklyCareAverageRate = programHistoryQuerydslRepository.getWeekCareAverageRate(request.userId, user.createdAt, request.week)
         val weeklyHistory = WeeklyHistoryResponse(weeklyCareAverageRate)
-        return ProgramHistoryResponse(user.name, null, dailyHistory, weeklyHistory, null)
+        return ProgramHistoryResponse(user.name, todayHistory, weeklyHistory, null)
     }
 
 }
