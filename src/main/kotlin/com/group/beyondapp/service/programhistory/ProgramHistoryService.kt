@@ -39,21 +39,20 @@ class ProgramHistoryService(
         if (!isValidWeek(calculatedWeek, request.week)) {
             throw IllegalArgumentException()
         }
+        // 4주간 데이터 조회 (4주일 : 파라미터 0)
+        if (request.week == 0) {
+            val fourWeeksHistory = fourWeeksHistoryService.getFourWeeksHistory(user, request)
+            return ProgramHistoryResponse(user.name, null, null, fourWeeksHistory)
+        }
 
         // 오늘한 운동과 명상 조회
-        val todayHistory = programHistoryQuerydslRepository.getTodayWorkOutAndMeditation(request.userId)
-
-        if (calculatedWeek == 0) {
+        val todayHistory = programHistoryQuerydslRepository.getTodayWorkOutAndMeditation(request.userId, user.createdAt)
+        if (calculatedWeek == 0) { // 7일이 안지났다면
             return ProgramHistoryResponse(user.name, todayHistory)
         }
 
         // 주차별 데이터
         val weeklyHistory = weeklyHistoryService.getWeeklyHistory(user, request)
-
-        // 4주간 데이터 조회 (4주일 : 파라미터 0)
-        if (request.week == 0) {
-            val fourWeeksHistory = fourWeeksHistoryService.getFourWeeksHistory(user, request)
-        }
 
         return ProgramHistoryResponse(user.name, todayHistory, weeklyHistory, null)
     }

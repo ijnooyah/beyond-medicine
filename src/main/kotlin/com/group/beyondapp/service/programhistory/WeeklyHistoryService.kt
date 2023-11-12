@@ -16,7 +16,8 @@ class WeeklyHistoryService(
     fun getWeeklyHistory(user: User, request: ProgramHistoryRequest): WeeklyHistoryResponse? {
         val weeklyHistory = weeklyHistoryQuerydslRepository.getWeekCareTotalAverageRate(request.userId, user.createdAt, request.week)
         val dailyHistories = weeklyHistoryQuerydslRepository.getDailyWorkOutRateAndMeditationRate(request.userId, user.createdAt, request.week)
-        // dailyHistories 데이터 가공해서 weelyHistory 안에 넣어주기 그리고 weeklyHsitory 가공하기
+        weeklyHistory?.weekWhat = request.week
+        weeklyHistory?.dailyHistories = dailyHistories
         return weeklyHistory
     }
 

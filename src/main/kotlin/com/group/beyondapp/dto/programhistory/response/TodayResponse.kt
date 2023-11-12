@@ -1,7 +1,9 @@
 package com.group.beyondapp.dto.programhistory.response
 
+import java.time.LocalDate
+
 data class TodayResponse(
-    val date: String?,  // 2023년 11월 12일 일요일
+    val date: LocalDate?,
     val dayWhat: Int?, // 몇일 차
     val workOutCount: Int?,
     val meditationCount: Int?,

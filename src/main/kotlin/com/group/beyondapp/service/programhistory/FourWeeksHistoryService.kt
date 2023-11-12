@@ -16,7 +16,7 @@ class FourWeeksHistoryService(
     fun getFourWeeksHistory(user: User, request: ProgramHistoryRequest): FourWeeksHistoryResponse? {
         val fourWeeksHistory = fourWeeksHistoryQuerydslRepository.getAllCareTotalAverageRate(request.userId, user.createdAt, request.week)
         val dailyHistories = fourWeeksHistoryQuerydslRepository.getDailyWorkOutRateAndMeditationRate(request.userId, user.createdAt, request.week)
-
+        fourWeeksHistory?.dailyHistories = dailyHistories
         return fourWeeksHistory
     }
 

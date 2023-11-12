@@ -1,10 +1,8 @@
 package com.group.beyondapp.repository.programhistory
 
 import com.group.beyondapp.domain.programhistory.QProgramHistory.programHistory
-import com.group.beyondapp.dto.programhistory.response.DailyHistoryResponse
 import com.group.beyondapp.dto.programhistory.response.TodayResponse
-import com.group.beyondapp.util.getWeekEndDate
-import com.group.beyondapp.util.getWeekStartDate
+import com.querydsl.core.types.ConstantImpl
 import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -16,11 +14,13 @@ class ProgramHistoryQuerydslRepository(
     private val queryFactory: JPAQueryFactory,
 ) {
 
-    fun getTodayWorkOutAndMeditation(userId: Int): TodayResponse? {
+    fun getTodayWorkOutAndMeditation(userId: Int, createdDate: LocalDate): TodayResponse? {
         return queryFactory
             .select(
                 Projections.constructor(
                     TodayResponse::class.java,
+                    programHistory.date,
+                    Expressions.asNumber(Expressions.numberTemplate(Integer::class.java, "ABS(DATEDIFF('DAY', {0}, {1})) + 1", ConstantImpl.create(createdDate), programHistory.date)).intValue(),
                     programHistory.workOutCount,
                     programHistory.meditationCount
                 )

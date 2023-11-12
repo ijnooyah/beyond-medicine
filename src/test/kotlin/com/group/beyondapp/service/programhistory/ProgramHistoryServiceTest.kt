@@ -69,6 +69,7 @@ class ProgramHistoryServiceTest@Autowired constructor(
             ProgramHistory(savedUser, createdDate.plusDays(25), 6, 1),
             ProgramHistory(savedUser, createdDate.plusDays(26), 6, 0),
             ProgramHistory(savedUser, createdDate.plusDays(27), 4, 0),
+            ProgramHistory(savedUser, createdDate.plusDays(28), 2, 1),
         ))
 
         // when
@@ -77,6 +78,6 @@ class ProgramHistoryServiceTest@Autowired constructor(
 
         // then
         val results = programHistoryRepository.findAll()
-        assertThat(results).hasSize(28)
+        assertThat(results).hasSize(29)
     }
 }
