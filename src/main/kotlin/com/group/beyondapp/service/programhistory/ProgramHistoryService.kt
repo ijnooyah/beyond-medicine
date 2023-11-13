@@ -20,7 +20,6 @@ class ProgramHistoryService(
 ) {
     
     fun isValidWeek(calculatedWeek: Int, paramWeek: Int): Boolean {
-        println("calculatedWeek: $calculatedWeek")
         val validParamWeek = when (calculatedWeek) {
             1 -> listOf(1)
             2 -> listOf(1, 2)
@@ -39,7 +38,7 @@ class ProgramHistoryService(
 
         val calculatedWeek = calculateWeek(user.createdAt)
         if (!isValidWeek(calculatedWeek, request.week)) {
-            throw BaseException(EnumErrorCode.BAD_REQUEST)
+            throw BaseException(EnumErrorCode.INVALID_WEEK)
         }
         // 4주간 데이터 조회 (4주일 : 파라미터 0)
         if (request.week == 0) {
@@ -49,9 +48,6 @@ class ProgramHistoryService(
 
         // 오늘한 운동과 명상 조회
         val todayHistory = programHistoryQuerydslRepository.getTodayWorkOutAndMeditation(request.userId, user.createdAt)
-        if (calculatedWeek == 0) { // 7일이 안지났다면
-            return ProgramHistoryResponse(user.name, todayHistory)
-        }
 
         // 주차별 데이터
         val weeklyHistory = weeklyHistoryService.getWeeklyHistory(user, request)
