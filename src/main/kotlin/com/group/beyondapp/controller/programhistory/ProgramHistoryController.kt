@@ -12,7 +12,7 @@ class ProgramHistoryController(
     private val programHistoryService: ProgramHistoryService,
 ) {
 
-    @GetMapping("/programs")
+    @GetMapping("/api/programs")
     fun getCareProgramParticipationRate(request: ProgramHistoryRequest): ProgramHistoryResponse {
         return programHistoryService.getUserProgramHistory(request)
     }
