@@ -10,6 +10,7 @@ import javax.persistence.*
 class ProgramHistory(
 
     @ManyToOne
+    @JoinColumn(name = "USER_ID")
     val user: User,
 
     val date: LocalDate,
