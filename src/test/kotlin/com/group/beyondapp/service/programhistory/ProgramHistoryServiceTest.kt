@@ -71,10 +71,10 @@ class ProgramHistoryServiceTest@Autowired constructor(
         val request = ProgramHistoryRequest(savedUser.id!!.toInt(), 0)
 
         // when & then
-        val enumErrorCode = assertThrows<BaseException> {
+        val message = assertThrows<BaseException> {
             programHistoryService.getUserProgramHistory(request)
-        }.enumErrorCode
-        AssertionsForInterfaceTypes.assertThat(enumErrorCode.message).isEqualTo("기한이 지나지 않아 해당 데이터를 조회할 수 없습니다.")
+        }.message
+        AssertionsForInterfaceTypes.assertThat(message).isEqualTo("기한이 지나지 않아 해당 데이터를 조회할 수 없습니다.")
     }
 
     @Test

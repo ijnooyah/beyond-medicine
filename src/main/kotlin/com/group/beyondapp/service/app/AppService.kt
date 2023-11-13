@@ -2,7 +2,7 @@ package com.group.beyondapp.service.app
 
 import com.group.beyondapp.dto.app.request.AppRequest
 import com.group.beyondapp.dto.app.response.AppResponse
-import com.group.beyondapp.exception.BaseException
+import com.group.beyondapp.exception.ClientException
 import com.group.beyondapp.exception.EnumErrorCode
 import com.group.beyondapp.repository.app.AppHashInfoQuerydslRepository
 import com.group.beyondapp.repository.app.AppVersionInfoQuerydslRepository
@@ -23,13 +23,13 @@ class AppService(
         // hash 비교
         val validHash = appHashInfoQuerydslRepository.getHashByOSandMode(request.os, request.mode)
         if (request.hash != validHash) {
-            throw BaseException(EnumErrorCode.INVALID_HASH)
+            throw ClientException.BadRequest(EnumErrorCode.INVALID_HASH)
         }
 
         val appVersionInfo = appVersionInfoQuerydslRepository.getAppVersionInfo()
         // user의 버전과 최소버전 비교
         if (compareVersions(request.version, appVersionInfo!!.minVersion) < 0) {
-            throw BaseException(EnumErrorCode.NEED_UPDATE)
+            throw ClientException.BadRequest(EnumErrorCode.NEED_UPDATE)
         }
         // user의 버전과 가장 최신버전 비교
         if (compareVersions(request.version, appVersionInfo!!.latestVersion) < 0) {

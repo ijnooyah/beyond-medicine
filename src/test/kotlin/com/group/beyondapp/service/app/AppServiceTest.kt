@@ -48,10 +48,10 @@ class AppServiceTest@Autowired constructor(
         val mode = "release"
         val hash = generateHash(os, mode)
         val request = AppRequest(version, os, mode, hash)
-        val enumErrorCode = assertThrows<BaseException> {
+        val message = assertThrows<BaseException> {
             appService.validateAndUpdateAppIntegrity(request)
-        }.enumErrorCode
-        AssertionsForInterfaceTypes.assertThat(enumErrorCode.message).isEqualTo("유효하지 않은 해시입니다.")
+        }.message
+        AssertionsForInterfaceTypes.assertThat(message).isEqualTo("유효하지 않은 해시입니다.")
 
     }
 
@@ -75,10 +75,10 @@ class AppServiceTest@Autowired constructor(
         val mode = "release"
         val hash = generateHash(os, mode)
         val request = AppRequest(version, os, mode, hash)
-        val enumErrorCode = assertThrows<BaseException> {
+        val message = assertThrows<BaseException> {
             appService.validateAndUpdateAppIntegrity(request)
-        }.enumErrorCode
-        AssertionsForInterfaceTypes.assertThat(enumErrorCode.message).isEqualTo("현재 버전이 실행가능한 최소버전보다 낮습니다.")
+        }.message
+        AssertionsForInterfaceTypes.assertThat(message).isEqualTo("현재 버전이 실행가능한 최소버전보다 낮습니다.")
     }
 
     @Test

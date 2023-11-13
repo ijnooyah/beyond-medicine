@@ -3,7 +3,7 @@ package com.group.beyondapp.service.programhistory
 import com.group.beyondapp.domain.user.UserRepository
 import com.group.beyondapp.dto.programhistory.request.ProgramHistoryRequest
 import com.group.beyondapp.dto.programhistory.response.ProgramHistoryResponse
-import com.group.beyondapp.exception.BaseException
+import com.group.beyondapp.exception.ClientException
 import com.group.beyondapp.exception.EnumErrorCode
 import com.group.beyondapp.repository.programhistory.ProgramHistoryQuerydslRepository
 import com.group.beyondapp.util.calculateWeek
@@ -34,11 +34,11 @@ class ProgramHistoryService(
     @Transactional(readOnly = true)
     fun getUserProgramHistory(request: ProgramHistoryRequest): ProgramHistoryResponse {
         
-        val user = userRepository.findByIdOrNull(request.userId.toLong()) ?: throw BaseException(EnumErrorCode.BAD_REQUEST)
+        val user = userRepository.findByIdOrNull(request.userId.toLong()) ?: throw ClientException.NotFound(EnumErrorCode.NOT_FOUND_USER)
 
         val calculatedWeek = calculateWeek(user.createdAt)
         if (!isValidWeek(calculatedWeek, request.week)) {
-            throw BaseException(EnumErrorCode.INVALID_WEEK)
+            throw ClientException.BadRequest(EnumErrorCode.INVALID_WEEK)
         }
         // 4주간 데이터 조회 (4주일 : 파라미터 0)
         if (request.week == 0) {
