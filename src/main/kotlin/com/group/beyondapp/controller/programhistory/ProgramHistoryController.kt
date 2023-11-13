@@ -13,7 +13,7 @@ class ProgramHistoryController(
 ) {
 
     @GetMapping("/programs")
-    fun getCareProgramParticipationRate(@RequestBody request: ProgramHistoryRequest): ProgramHistoryResponse {
+    fun getCareProgramParticipationRate(request: ProgramHistoryRequest): ProgramHistoryResponse {
         return programHistoryService.getUserProgramHistory(request)
     }
 }
